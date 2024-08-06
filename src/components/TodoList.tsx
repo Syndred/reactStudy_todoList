@@ -1,6 +1,6 @@
 import { Todo } from "@/types";
 interface Props {
-  todos: Todo[];
+  todos: Array<Todo>;
   toggleTodo: (id: number) => void;
   deleteTodo: (id: number) => void;
 }

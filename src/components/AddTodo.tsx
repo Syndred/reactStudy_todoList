@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
-interface Props {
+interface AddProps {
   addTodo: (text: string) => void;
 }
 
-const AddTodo = ({ addTodo }: Props) => {
+const AddTodo = ({ addTodo }: AddProps) => {
   const [inputText, setInputText] = useState("");
 
   const handleAddTodo = () => {
