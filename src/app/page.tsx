@@ -60,7 +60,7 @@ const getFilteredTodos=() => {
   }
 }
   return (
-    <div>
+    <div className="container mx-auto mt-56 w-1/3 min-h-56 p-6 flex items-center flex-col justify-evenly bg-gray-300">
       <h1>TodoList</h1>
       <AddTodo addTodo={addTodo} />
       <TodoList
@@ -69,7 +69,9 @@ const getFilteredTodos=() => {
         deleteTodo={deleteTodo}
         toggleTodo={toggleTodo}
       />
-      <TodoFilter setFilterStatus={setFilter} />
+      <div>
+        <TodoFilter setFilterStatus={setFilter} />
+      </div>
     </div>
   );
 }
