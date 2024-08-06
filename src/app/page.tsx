@@ -2,12 +2,13 @@
 import AddTodo from "@/components/AddTodo";
 import TodoFilter from "@/components/TodoFilter";
 import TodoList from "@/components/TodoList";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Todo } from "@/types";
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
-  let [filter, setFilter] = useState<Todo[]>([]);
+  const [filter, setFilter] = useState<Todo[]>([]);
+  const [filterStatus, setFilterStatus] = useState<string>("all");
 
   const addTodo = (text: string) => {
     const newTodo = {
@@ -28,34 +29,35 @@ export default function Home() {
     );
   };
 
-  const filterTodo = (status: string) => {
-    filter = todos;
-    switch (status) {
+  // 过滤逻辑
+  useEffect(() => {
+    let filteredTodos: Todo[] = [];
+    switch (filterStatus) {
       case "all":
-        filter = [];
+        filteredTodos = todos;
         break;
       case "completed":
-        filter = todos.filter((todo) => todo.completed);
+        filteredTodos = todos.filter((todo) => todo.completed);
         break;
       case "uncompleted":
-        filter = todos.filter((todo) => !todo.completed);
+        filteredTodos = todos.filter((todo) => !todo.completed);
         break;
       default:
-        filter = todos;
+        filteredTodos = todos;
     }
-    setFilter(filter);
-  };
+    setFilter(filteredTodos);
+  }, [todos, filterStatus]);
 
   return (
     <div>
       <h1>TodoList</h1>
       <AddTodo addTodo={addTodo} />
       <TodoList
-        todos={filter[0] ? filter : todos}
+        todos={filter}
         deleteTodo={deleteTodo}
         toggleTodo={toggleTodo}
       />
-      <TodoFilter filterTodo={filterTodo} />
+      <TodoFilter setFilterStatus={setFilterStatus} />
     </div>
   );
 }
