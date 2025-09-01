@@ -15,6 +15,7 @@ export default function Home() {
       id: Date.now(),
       text,
       completed: false,
+      createdAt: Date.now(), // 添加创建时间
     };
     setTodos([...todos, newTodo]);
   };
@@ -60,18 +61,19 @@ const getFilteredTodos=() => {
   }
 }
   return (
-    <div className="container mx-auto mt-56 w-1/3 min-h-56 p-6 flex items-center flex-col justify-evenly bg-gray-300">
-      <h1>TodoList</h1>
+    <div className="container mx-auto mt-20 max-w-md p-6 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-xl shadow-lg min-h-screen">
+      <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-8 select-none">
+        TodoList
+      </h1>
       <AddTodo addTodo={addTodo} />
+      <div className="w-full my-6">
+        <TodoFilter setFilterStatus={setFilter} />
+      </div>
       <TodoList
-        // todos={filter}
         todos={getFilteredTodos()}
         deleteTodo={deleteTodo}
         toggleTodo={toggleTodo}
       />
-      <div>
-        <TodoFilter setFilterStatus={setFilter} />
-      </div>
     </div>
   );
 }
