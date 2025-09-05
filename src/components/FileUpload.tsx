@@ -81,7 +81,7 @@ export default function FileUpload({ onFilesSelected, isUploading }: FileUploadP
               className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
             >
               <File className="w-4 h-4" />
-              <span>选择文件</span>
+              <span>文件</span>
             </button>
             <button
               type="button"
@@ -93,7 +93,7 @@ export default function FileUpload({ onFilesSelected, isUploading }: FileUploadP
               className="flex items-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
             >
               <FolderOpen className="w-4 h-4" />
-              <span>选择文件夹</span>
+              <span>文件夹</span>
             </button>
           </div>
         </div>

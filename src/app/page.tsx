@@ -134,9 +134,6 @@ export default function Home() {
           <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-4 select-none">
             FileShare
           </h1>
-          <p className="text-gray-400 text-lg">
-            多端文件传输助手 - 纯前端解决方案
-          </p>
         </div>
 
         {/* 上传区域 */}
