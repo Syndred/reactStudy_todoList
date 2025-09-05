@@ -1,36 +1,139 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 多端文件传输助手
 
-## Getting Started
+一个纯前端的文件传输应用，支持文件上传、下载、预览和二维码分享功能。
 
-First, run the development server:
+## 功能特性
+
+- ✅ **纯前端解决方案** - 无需后端服务器，可直接部署到 Vercel、Netlify 等平台
+- ✅ **文件上传** - 支持单个文件和文件夹上传
+- ✅ **文件管理** - 文件列表展示，支持删除操作
+- ✅ **文件下载** - 支持下载已上传的文件
+- ✅ **图片预览** - 支持图片文件的实时预览
+- ✅ **二维码分享** - 生成当前页面二维码，方便手机访问
+- ✅ **响应式设计** - 完美支持桌面和移动端
+- ✅ **TypeScript** - 完整的类型安全支持
+
+## 技术栈
+
+- **框架**: Next.js 14 (App Router)
+- **语言**: TypeScript
+- **样式**: Tailwind CSS
+- **文件处理**: React Dropzone
+- **二维码**: qrcode.react
+- **图标**: Lucide React
+
+## 快速开始
+
+### 安装依赖
+
+```bash
+npm install
+```
+
+### 启动开发服务器
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+访问 [http://localhost:3000](http://localhost:3000) 查看应用。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 构建生产版本
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## 部署
 
-To learn more about Next.js, take a look at the following resources:
+### 部署到 Vercel
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. 将代码推送到 Git 仓库
+2. 访问 [Vercel](https://vercel.com) 并登录
+3. 导入你的 Git 仓库
+4. 使用默认配置部署
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+详细部署说明请查看 [DEPLOYMENT.md](./DEPLOYMENT.md)
 
-## Deploy on Vercel
+## 使用说明
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 基本功能
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+1. **上传文件**: 点击上传区域或拖拽文件到指定区域
+2. **管理文件**: 在文件列表中查看、删除、下载文件
+3. **预览图片**: 点击图片文件进行预览
+4. **分享链接**: 点击分享按钮生成二维码，用手机扫描访问
+
+### 注意事项
+
+- 🔄 **会话持久性**: 文件仅在当前浏览器会话中有效，刷新页面会重置
+- 📱 **跨设备**: 每个设备需要独立上传和管理文件
+- 💾 **存储限制**: 受浏览器内存限制，大文件可能无法处理
+- 🌐 **网络要求**: 二维码分享需要设备在同一网络下可访问
+
+## 项目结构
+
+```
+src/
+├── app/
+│   ├── globals.css          # 全局样式
+│   ├── layout.tsx           # 根布局
+│   ├── page.tsx             # 主页面
+│   └── test/
+│       └── page.tsx         # 功能测试页面
+├── components/
+│   ├── FileList.tsx         # 文件列表组件
+│   ├── FilePreviewModal.tsx # 文件预览模态框
+│   ├── FileUpload.tsx       # 文件上传组件
+│   └── ShareButton.tsx      # 分享按钮组件
+└── types.ts                 # TypeScript 类型定义
+```
+
+## 组件说明
+
+### FileUpload
+支持拖拽和点击上传，处理文件和文件夹上传。
+
+### FileList
+展示上传的文件列表，提供删除、下载、预览功能。
+
+### FilePreviewModal
+模态框组件，支持图片预览和其他文件信息展示。
+
+### ShareButton
+生成当前页面二维码，支持手机扫码访问。
+
+## 开发说明
+
+### 添加新功能
+
+1. 在 `src/types.ts` 中定义相关类型
+2. 创建或修改组件文件
+3. 在主页面 `src/app/page.tsx` 中集成
+4. 更新样式和测试
+
+### 样式定制
+
+使用 Tailwind CSS 进行样式定制，所有样式类都在组件中直接定义。
+
+## 限制和未来改进
+
+### 当前限制
+- 纯前端，文件无法持久化存储
+- 不支持多设备实时同步
+- 大文件处理能力有限
+
+### 未来改进方向
+- 添加后端 API 支持文件存储
+- 实现 WebRTC 点对点文件传输
+- 添加用户认证和权限管理
+- 支持云存储集成
+
+## 许可证
+
+MIT License
+
+## 贡献
+
+欢迎提交 Issue 和 Pull Request！
