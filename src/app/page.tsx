@@ -35,7 +35,7 @@ export default function Home() {
         name: r2File.Key.split('/').pop() || r2File.Key, // Extract file name
         size: r2File.Size,
         type: 'application/octet-stream', // Default type, can be improved
-        url: `https://pub-abf9a87a1055214a87809da4e41c64fb.r2.dev/syndred/${r2File.Key}`,
+        url: `${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL}/${r2File.Key}`,
         uploadTime: new Date(r2File.LastModified),
         progress: 100,
         key: r2File.Key,

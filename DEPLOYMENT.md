@@ -22,12 +22,12 @@
 **重要**: 需要在 Vercel 中配置以下环境变量才能使 Cloudflare R2 功能正常工作：
 
 在 Vercel 项目设置中添加以下环境变量：
-- `CLOUDFLARE_ACCOUNT_ID` = `abf9a87a1055214a87809da4e41c64fb`
-- `CLOUDFLARE_R2_ACCESS_KEY_ID` = `74ac5eb370dc4a63f36d492b3cf6e81d`
-- `CLOUDFLARE_R2_SECRET_ACCESS_KEY` = `4533a38061be908ccccbd3be3f13a16b78b42eb286400a2f7d432541f391277c`
-- `CLOUDFLARE_R2_BUCKET_NAME` = `syndred`
-- `CLOUDFLARE_R2_ENDPOINT` = `https://abf9a87a1055214a87809da4e41c64fb.r2.cloudflarestorage.com`
-- `CLOUDFLARE_R2_PUBLIC_URL` = `https://pub-abf9a87a1055214a87809da4e41c64fb.r2.dev/syndred`
+- `NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID` = `abf9a87a1055214a87809da4e41c64fb`
+- `NEXT_PUBLIC_CLOUDFLARE_R2_ACCESS_KEY_ID` = `74ac5eb370dc4a63f36d492b3cf6e81d`
+- `NEXT_PUBLIC_CLOUDFLARE_R2_SECRET_ACCESS_KEY` = `4533a38061be908ccccbd3be3f13a16b78b42eb286400a2f7d432541f391277c`
+- `NEXT_PUBLIC_CLOUDFLARE_R2_BUCKET_NAME` = `syndred`
+- `NEXT_PUBLIC_CLOUDFLARE_R2_ENDPOINT` = `https://abf9a87a1055214a87809da4e41c64fb.r2.cloudflarestorage.com`
+- `NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL` = `https://pub-abf9a87a1055214a87809da4e41c64fb.r2.dev/syndred`
 
 **配置步骤**:
 1. 在 Vercel 项目页面，点击 "Settings" 选项卡
