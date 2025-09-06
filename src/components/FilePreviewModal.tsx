@@ -46,37 +46,46 @@ export default function FilePreviewModal({ file, isOpen, onClose, onDownload }: 
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
-    // 尝试使用文件内容进行预览
-    if (file.content) {
-      const blob = new Blob([file.content], { type: file.type });
-      const url = URL.createObjectURL(blob);
-
+    // 使用 R2 URL 进行预览
+    if (file.url) {
       if (file.type.startsWith('image/')) {
         return (
           <img
-            src={url}
+            src={file.url}
             alt={file.name}
             className="max-w-full max-h-96 object-contain rounded-lg"
-            onLoad={() => URL.revokeObjectURL(url)}
+            onError={(e) => {
+              // 如果图片加载失败，显示错误信息
+              e.currentTarget.style.display = 'none';
+            }}
           />
         );
       }
 
-      if (file.type.startsWith('text/') || file.type.includes('code')) {
-        // 对于文本文件，尝试读取内容
-        const reader = new FileReader();
-        reader.readAsText(blob);
+      if (file.type.startsWith('video/')) {
         return (
-          <div className="w-full h-96 bg-gray-900 rounded-lg p-4 overflow-auto">
-            <pre className="text-sm text-white whitespace-pre-wrap">
-              文本文件预览功能需要额外处理
-            </pre>
-          </div>
+          <video
+            src={file.url}
+            controls
+            className="max-w-full max-h-96 rounded-lg"
+          >
+            您的浏览器不支持视频播放
+          </video>
+        );
+      }
+
+      if (file.type.includes('pdf')) {
+        return (
+          <iframe
+            src={file.url}
+            className="w-full h-96 rounded-lg"
+            title={file.name}
+          />
         );
       }
     }
 
-    // 如果没有文件内容或无法预览，显示文件信息
+    // 如果无法预览，显示文件信息
     return (
       <div className="text-center py-12">
         <div className="text-8xl mb-6">{getFileIcon(file.type)}</div>
