@@ -97,9 +97,9 @@ export default function ShareButton({ shareUrl }: ShareButtonProps) {
           </div>
 
           <div className="text-xs text-gray-500 text-center space-y-1">
-            <p>📱 确保设备在同一局域网内</p>
-            <p>🔄 支持手机和电脑互相传输文件</p>
-            <p>🌐 复制链接分享给其他用户</p>
+            <p>📱 扫描二维码或复制链接访问文件</p>
+            <p>🔄 支持多设备间文件共享</p>
+            <p>☁️ 文件已存储在云端，随时访问</p>
           </div>
         </div>
       )}

@@ -3,10 +3,10 @@ export interface FileItem {
   name: string;
   size: number;
   type: string;
-  url?: string;
+  url?: string; // R2文件的公共访问URL
   uploadTime: Date;
   progress?: number;
-  content?: ArrayBuffer; // 文件内容
+  key?: string; // R2中的文件key
 }
 
 export interface UploadState {
@@ -21,3 +21,13 @@ export interface ShareState {
   qrCodeVisible: boolean;
 }
 
+export interface SignedUrlResponse {
+  signedUrl: string;
+  publicUrl: string;
+}
+
+export interface R2File {
+  Key: string;
+  Size: number;
+  LastModified: string;
+}

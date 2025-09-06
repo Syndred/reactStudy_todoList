@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import FileUpload from '@/components/FileUpload';
 import FileList from '@/components/FileList';
 import ShareButton from '@/components/ShareButton';
 import FilePreviewModal from '@/components/FilePreviewModal';
-import { FileItem, UploadState, ShareState } from '@/types';
+import { FileItem, UploadState, ShareState, SignedUrlResponse, R2File } from '@/types';
 
 export default function Home() {
   const [uploadState, setUploadState] = useState<UploadState>({
@@ -22,96 +22,169 @@ export default function Home() {
 
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
 
+  const fetchFiles = useCallback(async () => {
+    try {
+      const response = await fetch('/api/r2-list');
+      if (!response.ok) {
+        throw new Error('Failed to fetch files from R2');
+      }
+      const { files: r2Files }: { files: R2File[] } = await response.json();
+
+      const fetchedFileItems: FileItem[] = r2Files.map(r2File => ({
+        id: r2File.Key, // Use Key as ID
+        name: r2File.Key.split('/').pop() || r2File.Key, // Extract file name
+        size: r2File.Size,
+        type: 'application/octet-stream', // Default type, can be improved
+        url: `${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL}/${r2File.Key}`,
+        uploadTime: new Date(r2File.LastModified),
+        progress: 100,
+        key: r2File.Key,
+      }));
+      setUploadState(prev => ({ ...prev, files: fetchedFileItems }));
+    } catch (error) {
+      console.error('Error fetching files:', error);
+      alert('获取文件列表失败，请检查控制台');
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchFiles();
+  }, [fetchFiles]);
+
   const handleFilesSelected = useCallback(async (files: File[]) => {
     setUploadState(prev => ({ ...prev, isUploading: true }));
 
     for (const file of files) {
-      // 读取文件内容
-      const fileContent = await readFileAsArrayBuffer(file);
-      
+      const fileKey = `${Date.now()}-${file.name}`; // Unique key for R2
+
+      // Get signed URL from API
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('fileName', fileKey);
+
+      const uploadResponse = await fetch('/api/r2-upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) {
+        console.error('Failed to upload file:', await uploadResponse.text());
+        alert('文件上传失败');
+        setUploadState(prev => ({ ...prev, isUploading: false }));
+        return;
+      }
+
+      const { publicUrl, fileName: uploadedFileName, size, type }: { publicUrl: string, fileName: string, size: number, type: string } = await uploadResponse.json();
+
       const fileItem: FileItem = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: uploadedFileName,
         name: file.name,
-        size: file.size,
-        type: file.type,
+        size: size,
+        type: type,
         uploadTime: new Date(),
         progress: 0,
-        content: fileContent // 存储文件内容
+        url: publicUrl,
+        key: uploadedFileName,
       };
 
-      // 首先添加文件到列表
       setUploadState(prev => ({
         ...prev,
         files: [...prev.files, fileItem]
       }));
 
-      // 模拟上传进度
-      for (let progress = 0; progress <= 100; progress += 10) {
-        await new Promise(resolve => setTimeout(resolve, 100));
+      try {
+        // Simulate progress (optional, R2 upload is fast)
+        for (let progress = 0; progress <= 100; progress += 10) {
+          await new Promise(resolve => setTimeout(resolve, 50));
+          setUploadState(prev => ({
+            ...prev,
+            files: prev.files.map(f =>
+              f.id === fileItem.id ? { ...f, progress } : f
+            )
+          }));
+        }
+
+        // Simulate progress (optional, R2 upload is fast)
+        for (let progress = 0; progress <= 100; progress += 10) {
+          await new Promise(resolve => setTimeout(resolve, 50));
+          setUploadState(prev => ({
+            ...prev,
+            files: prev.files.map(f =>
+              f.id === fileItem.id ? { ...f, progress } : f
+            )
+          }));
+        }
+
         setUploadState(prev => ({
           ...prev,
           files: prev.files.map(f =>
-            f.id === fileItem.id ? { ...f, progress } : f
+            f.id === fileItem.id ? { ...f, progress: 100 } : f
           )
         }));
+        fetchFiles(); // Refresh file list after successful upload
+      } catch (uploadError) {
+        console.error('Error uploading file to R2:', uploadError);
+        alert('文件上传失败');
+        setUploadState(prev => ({
+          ...prev,
+          files: prev.files.filter(f => f.id !== fileItem.id), // Remove failed upload
+        }));
       }
-
-      // 上传完成
-      setUploadState(prev => ({
-        ...prev,
-        files: prev.files.map(f =>
-          f.id === fileItem.id ? { ...f, progress: 100 } : f
-        )
-      }));
     }
 
     setUploadState(prev => ({ ...prev, isUploading: false }));
-  }, []);
+  }, [fetchFiles]);
 
-  // 读取文件为ArrayBuffer
-  const readFileAsArrayBuffer = (file: File): Promise<ArrayBuffer> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target?.result as ArrayBuffer);
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(file);
-    });
-  };
+  const handleDeleteFile = useCallback(async (fileId: string) => {
+    const fileToDelete = uploadState.files.find(f => f.id === fileId);
+    if (!fileToDelete || !fileToDelete.key) {
+      alert('文件信息不完整，无法删除');
+      return;
+    }
 
-  const handleDeleteFile = useCallback((fileId: string) => {
-    setUploadState(prev => ({
-      ...prev,
-      files: prev.files.filter(f => f.id !== fileId)
-    }));
-  }, []);
+    try {
+      const response = await fetch('/api/r2-delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ key: fileToDelete.key }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete file from R2');
+      }
+
+      setUploadState(prev => ({
+        ...prev,
+        files: prev.files.filter(f => f.id !== fileId)
+      }));
+      alert('文件删除成功');
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      alert('删除文件失败，请重试');
+    }
+  }, [uploadState.files]);
 
   const handleDownloadFile = useCallback(async (file: FileItem) => {
+    if (!file.url) {
+      alert('文件URL不存在，无法下载');
+      return;
+    }
     try {
-      if (file.content) {
-        // 使用实际的文件内容创建Blob
-        const blob = new Blob([file.content], { type: file.type });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = file.name;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      } else {
-        // 如果没有文件内容，创建一个包含文件信息的文本文件
-        const fileInfo = `文件名: ${file.name}\n文件大小: ${file.size} bytes\n文件类型: ${file.type}\n上传时间: ${file.uploadTime.toLocaleString()}`;
-        
-        const blob = new Blob([fileInfo], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = file.name + '.txt';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+      const response = await fetch(file.url);
+      if (!response.ok) {
+        throw new Error(`Failed to download file: ${response.statusText}`);
       }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     } catch (error) {
       console.error('下载文件失败:', error);
       alert('下载文件失败，请重试');

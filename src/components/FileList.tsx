@@ -79,13 +79,15 @@ export default function FileList({ files, onDelete, onDownload, onPreview }: Fil
                   </div>
                 ) : (
                   <>
-                    <button
-                      onClick={() => onPreview(file)}
-                      className="p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-colors"
-                      title="预览"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
+                    {file.type.startsWith('image/') || file.type.startsWith('video/') || file.type.includes('pdf') ? (
+                      <button
+                        onClick={() => onPreview(file)}
+                        className="p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-colors"
+                        title="预览"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                    ) : null}
                     <button
                       onClick={() => onDownload(file)}
                       className="p-2 text-gray-400 hover:text-green-400 hover:bg-green-400/10 rounded-lg transition-colors"
