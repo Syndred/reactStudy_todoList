@@ -27,7 +27,10 @@ export async function POST(request: Request) {
       Bucket: process.env.NEXT_PUBLIC_CLOUDFLARE_R2_BUCKET_NAME,
       Key: fileName,
       Body: buffer,
-      ContentType: file.type,
+      ContentType: file.type, // Set ContentType
+      Metadata: {
+        'Content-Type': file.type, // Store ContentType in metadata
+      },
     });
 
     await s3Client.send(command);

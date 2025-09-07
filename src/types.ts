@@ -30,4 +30,5 @@ export interface R2File {
   Key: string;
   Size: number;
   LastModified: string;
+  ContentType?: string; // Add ContentType to R2File interface
 }

@@ -15,7 +15,7 @@ export default function Home() {
   });
 
   const [shareState, setShareState] = useState<ShareState>({
-    shareUrl: typeof window !== 'undefined' ? window.location.href : '',
+    shareUrl: '',
     isSharing: false,
     qrCodeVisible: false,
   });
@@ -34,7 +34,7 @@ export default function Home() {
         id: r2File.Key, // Use Key as ID
         name: r2File.Key.split('/').pop() || r2File.Key, // Extract file name
         size: r2File.Size,
-        type: 'application/octet-stream', // Default type, can be improved
+        type: r2File.ContentType || 'application/octet-stream', // Use ContentType from R2
         url: `${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL}/${r2File.Key}`,
         uploadTime: new Date(r2File.LastModified),
         progress: 100,
@@ -49,6 +49,9 @@ export default function Home() {
 
   useEffect(() => {
     fetchFiles();
+    if (typeof window !== 'undefined') {
+      setShareState(prev => ({ ...prev, shareUrl: window.location.href }));
+    }
   }, [fetchFiles]);
 
   const handleFilesSelected = useCallback(async (files: File[]) => {
@@ -160,11 +163,12 @@ export default function Home() {
         files: prev.files.filter(f => f.id !== fileId)
       }));
       alert('文件删除成功');
+      fetchFiles(); // Refresh file list after successful deletion
     } catch (error) {
       console.error('Error deleting file:', error);
       alert('删除文件失败，请重试');
     }
-  }, [uploadState.files]);
+  }, [uploadState.files, fetchFiles]);
 
   const handleDownloadFile = useCallback(async (file: FileItem) => {
     if (!file.url) {

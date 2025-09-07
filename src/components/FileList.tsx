@@ -70,7 +70,7 @@ export default function FileList({ files, onDelete, onDownload, onPreview }: Fil
               </div>
 
               <div className="flex items-center space-x-2">
-                {file.progress !== undefined && file.progress < 100 ? (
+                {file.progress != null && file.progress < 100 ? (
                   <div className="w-20 bg-gray-600 rounded-full h-2">
                     <div
                       className="bg-blue-500 h-2 rounded-full transition-all duration-300"
