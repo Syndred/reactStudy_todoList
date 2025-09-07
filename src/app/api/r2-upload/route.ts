@@ -1,12 +1,18 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
 
+const R2_ACCOUNT_ID = process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID;
+const R2_ACCESS_KEY_ID = process.env.NEXT_PUBLIC_CLOUDFLARE_R2_ACCESS_KEY_ID;
+const R2_SECRET_ACCESS_KEY = process.env.NEXT_PUBLIC_CLOUDFLARE_R2_SECRET_ACCESS_KEY;
+const R2_BUCKET_NAME = process.env.NEXT_PUBLIC_CLOUDFLARE_R2_BUCKET_NAME;
+const R2_ENDPOINT = process.env.NEXT_PUBLIC_CLOUDFLARE_R2_ENDPOINT;
+
 const s3Client = new S3Client({
   region: "auto",
-  endpoint: process.env.NEXT_PUBLIC_CLOUDFLARE_R2_ENDPOINT,
+  endpoint: R2_ENDPOINT,
   credentials: {
-    accessKeyId: process.env.NEXT_PUBLIC_CLOUDFLARE_R2_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.NEXT_PUBLIC_CLOUDFLARE_R2_SECRET_ACCESS_KEY || "",
+    accessKeyId: R2_ACCESS_KEY_ID || "",
+    secretAccessKey: R2_SECRET_ACCESS_KEY || "",
   },
 });
 
@@ -17,14 +23,19 @@ export async function POST(request: Request) {
     const fileName = formData.get('fileName') as string;
 
     if (!file || !fileName) {
+      console.error('Upload API: Missing file or fileName');
       return NextResponse.json({ message: "Missing file or fileName" }, { status: 400 });
     }
 
     // Convert file to buffer
     const buffer = Buffer.from(await file.arrayBuffer());
 
+    console.log(`Upload API: Attempting to upload key: ${fileName}`);
+    console.log(`Upload API: R2_ENDPOINT: ${R2_ENDPOINT}`);
+    console.log(`Upload API: R2_BUCKET_NAME: ${R2_BUCKET_NAME}`);
+
     const command = new PutObjectCommand({
-      Bucket: process.env.NEXT_PUBLIC_CLOUDFLARE_R2_BUCKET_NAME,
+      Bucket: R2_BUCKET_NAME,
       Key: fileName,
       Body: buffer,
       ContentType: file.type, // Set ContentType

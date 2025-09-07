@@ -24,7 +24,7 @@ export default function Home() {
 
   const fetchFiles = useCallback(async () => {
     try {
-      const response = await fetch('/api/r2-list');
+      const response = await fetch("/api/r2-list", { cache: "no-store" });
       if (!response.ok) {
         throw new Error('Failed to fetch files from R2');
       }
